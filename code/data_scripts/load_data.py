@@ -1,5 +1,6 @@
 import re
 import os
+import cv2
 import numpy as np
 from PIL import Image
 import xml.dom.minidom as minidom
@@ -23,14 +24,18 @@ def main():
 
 	output = None
 	for image_name in image_names:
-		im_file = os.path.join(im_dir, image_name + '.png')
+		im_file = os.path.join(im_dir, image_name + '.jpeg')
 		xml_file = os.path.join(xml_dir, image_name + '.xml')
 
 		im = Image.open(im_file)
-
 		downsampled_im = im.resize((image_side, image_side), Image.ANTIALIAS)
 		im_pix = np.array(downsampled_im, dtype = np.float32)
 		im_pix = np.reshape(im_pix, (-1))
+
+		# im = cv2.imread(im_file)
+		# downsampled_im = cv2.resize(im, (image_side, image_side))
+		# im_pix = np.array(downsampled_im, dtype = np.float32)
+		# im_pix = np.reshape(im_pix, (-1))
 
 		with open(xml_file) as f:
 			data = minidom.parseString(f.read())
@@ -57,6 +62,10 @@ def main():
 		for box in boxes:
 			pupil = im.crop(box);
 			pupil = pupil.resize((pupil_side, pupil_side), Image.ANTIALIAS)
+			
+			# pupil = im[box[1] : box[3], box[0] : box[2]]
+			# pupil = cv2.resize(pupil, (pupil_side, pupil_side))
+
 			pupil_pix = np.array(pupil, dtype = np.float32)
 			pupil_pix = np.reshape(pupil_pix, (-1))
 			im_pix = np.append(im_pix, pupil_pix)
@@ -70,6 +79,8 @@ def main():
 		else:
 			output = np.vstack((output, im_pix))
 
+	np.random.shuffle(output)
+	output = np.vstack((np.zeros(3 * image_side ** 2 + 6 * pupil_side ** 2 + 2), output))
 	np.savetxt(get("DATA.CSV_PATH"), output, delimiter = ",", fmt = "%f")
 
 if __name__ == "__main__":

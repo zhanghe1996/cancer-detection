@@ -1,13 +1,13 @@
 <annotation>
 	<folder>Images</folder>
-	<filename>27f27a69e2770f8e0c25216c7830895d_UPWARD_GAZE.jpeg</filename>
-	<path>/Users/ZH/Documents/UM/cancer-detection/data/Images/27f27a69e2770f8e0c25216c7830895d_UPWARD_GAZE.jpeg</path>
+	<filename>ed8c970e7a9afc89183bc0a0e1ec3c93_DOWNWARD_GAZE.jpeg</filename>
+	<path>/Users/ZH/Documents/UM/cancer-detection/data/Images/ed8c970e7a9afc89183bc0a0e1ec3c93_DOWNWARD_GAZE.jpeg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>0</width>
-		<height>0</height>
+		<width>4032</width>
+		<height>2268</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
@@ -17,22 +17,22 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>240</xmin>
-			<ymin>200</ymin>
-			<xmax>266</xmax>
-			<ymax>222</ymax>
+			<xmin>1616</xmin>
+			<ymin>979</ymin>
+			<xmax>1752</xmax>
+			<ymax>1088</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>normal</name>
+		<name>cancer</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>539</xmin>
-			<ymin>209</ymin>
-			<xmax>563</xmax>
-			<ymax>232</ymax>
+			<xmin>611</xmin>
+			<ymin>1052</ymin>
+			<xmax>752</xmax>
+			<ymax>1179</ymax>
 		</bndbox>
 	</object>
 </annotation>

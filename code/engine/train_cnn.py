@@ -15,19 +15,25 @@ def get_weights(saver, sess):
 
 def report_training_progress(batch_index, input_layer, loss_func, data):
     ''' Update user on training progress '''
-    # if batch_index % 5:
-    #     return
-    # print('starting batch number %d \033[100D\033[1A' % batch_index)
-    # if batch_index % 50:
-    #     return
+    if batch_index % 5:
+        return
+    print('starting batch number %d \033[100D\033[1A' % batch_index)
+    if batch_index % 50:
+        return
+
+    error = loss_func.eval(feed_dict={input_layer: data.train.images, 
+                           true_labels: data.train.labels})
+    acc = accuracy.eval(feed_dict={input_layer: data.train.images, 
+                        true_labels: data.train.labels})
+    print('\n \t training cross_entropy is about %f' % error)
+    print(' \t training accuracy is about %f' % acc)
+
     error = loss_func.eval(feed_dict={input_layer: data.validation.images, 
                            true_labels: data.validation.labels})
     acc = accuracy.eval(feed_dict={input_layer: data.validation.images, 
                         true_labels: data.validation.labels})
-    # error = loss_func.eval(feed_dict={input_layer: data.test.images, true_labels: data.test.labels})
-    # acc = accuracy.eval(feed_dict={input_layer: data.test.images, true_labels: data.test.labels})
-    print('\n \t cross_entropy is about %f' % error)
-    print(' \t accuracy is about %f' % acc)
+    print(' \t validation cross_entropy is about %f' % error)
+    print(' \t validation accuracy is about %f' % acc)
 
 
 def train_cnn(input_layer, prediction_layer, loss_func, optimizer, data):

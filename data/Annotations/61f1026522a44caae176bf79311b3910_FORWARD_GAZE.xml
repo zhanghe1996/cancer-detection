@@ -1,13 +1,13 @@
 <annotation>
 	<folder>Images</folder>
-	<filename>61f1026522a44caae176bf79311b3910_FORWARD_GAZE.png</filename>
-	<path>/Users/ZH/Documents/UM/cancer-detection/data/Images/61f1026522a44caae176bf79311b3910_FORWARD_GAZE.png</path>
+	<filename>61f1026522a44caae176bf79311b3910_FORWARD_GAZE.jpeg</filename>
+	<path>/Users/ZH/Documents/UM/cancer-detection/data/Images/61f1026522a44caae176bf79311b3910_FORWARD_GAZE.jpeg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>800</width>
-		<height>480</height>
+		<width>0</width>
+		<height>0</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
@@ -17,8 +17,8 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>234</xmin>
-			<ymin>205</ymin>
+			<xmin>233</xmin>
+			<ymin>203</ymin>
 			<xmax>262</xmax>
 			<ymax>232</ymax>
 		</bndbox>
@@ -30,7 +30,7 @@
 		<difficult>0</difficult>
 		<bndbox>
 			<xmin>528</xmin>
-			<ymin>209</ymin>
+			<ymin>210</ymin>
 			<xmax>557</xmax>
 			<ymax>238</ymax>
 		</bndbox>

@@ -4,6 +4,26 @@ import numpy as np
 import sys
 from utils.config import get
 
+class pupil_weight:
+    W1 = tf.Variable(tf.truncated_normal([5, 5, 3, 16], stddev = 0.1 / np.sqrt(75)))
+    b1 = tf.Variable(tf.constant(0.01, shape=[16]))
+    W2 = tf.Variable(tf.truncated_normal([5, 5, 16, 32], stddev = 0.1 / 20))
+    b2 = tf.Variable(tf.constant(0.01, shape=[32]))
+    W3 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev = 0.1 / np.sqrt(800)))
+    b3 = tf.Variable(tf.constant(0.01, shape=[64]))
+    W4 = tf.Variable(tf.random_normal([4 * 4 * 64, 100], stddev = 1.0 / 32))
+    b4 = tf.Variable(tf.constant(0.01, shape=[100]))
+
+class image_weight:
+    W1 = tf.Variable(tf.truncated_normal([5, 5, 3, 16], stddev = 0.1 / np.sqrt(75)))
+    b1 = tf.Variable(tf.constant(0.01, shape=[16]))
+    W2 = tf.Variable(tf.truncated_normal([5, 5, 16, 32], stddev = 0.1 / 20))
+    b2 = tf.Variable(tf.constant(0.01, shape=[32]))
+    W3 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev = 0.1 / np.sqrt(800)))
+    b3 = tf.Variable(tf.constant(0.01, shape=[64]))
+    W4 = tf.Variable(tf.random_normal([4 * 4 * 64, 10], stddev = 1.0 / 32))
+    b4 = tf.Variable(tf.constant(0.01, shape=[10]))
+
 def average_pooling(x, in_length=32, scale=2):
     as_image = tf.reshape(x, [-1, in_length, in_length, 3])
     pooled = tf.nn.avg_pool(as_image, ksize=[1, scale, scale, 1], strides=[1, scale, scale, 1], padding='SAME')
@@ -11,54 +31,45 @@ def average_pooling(x, in_length=32, scale=2):
     return as_vector
 
 def pupil_cnn(pupil):
-    W1 = tf.Variable(tf.truncated_normal([5, 5, 3, 16], stddev = 0.1 / np.sqrt(75)))
-    b1 = tf.Variable(tf.constant(0.01, shape=[16]))
-    W2 = tf.Variable(tf.truncated_normal([5, 5, 16, 32], stddev = 0.1 / 20))
-    b2 = tf.Variable(tf.constant(0.01, shape=[32]))
-    W3 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev = 0.1 / np.sqrt(800)))
-    b3 = tf.Variable(tf.constant(0.01, shape=[64]))
-    W4 = tf.Variable(tf.random_normal([2 * 2 * 64, 50], stddev = 1.0 / 16))
-    b4 = tf.Variable(tf.constant(0.01, shape=[50]))
-    W5 = tf.Variable(tf.random_normal([50, 1], stddev = 1.0 / np.sqrt(50)))
-    b5 = tf.Variable(tf.constant(0.01, shape=[1]))
+    conv1 = tf.nn.relu(tf.nn.conv2d(pupil, pupil_weight.W1, strides=[1, 2, 2, 1], padding='SAME') + pupil_weight.b1)
+    conv2 = tf.nn.relu(tf.nn.conv2d(conv1, pupil_weight.W2, strides=[1, 2, 2, 1], padding='SAME') + pupil_weight.b2)
+    conv3 = tf.nn.relu(tf.nn.conv2d(conv2, pupil_weight.W3, strides=[1, 2, 2, 1], padding='SAME') + pupil_weight.b3)
 
-    conv1 = tf.nn.relu(tf.nn.conv2d(pupil, W1, strides=[1, 2, 2, 1], padding='SAME') + b1)
-    conv2 = tf.nn.relu(tf.nn.conv2d(conv1, W2, strides=[1, 2, 2, 1], padding='SAME') + b2)
-    conv3 = tf.nn.relu(tf.nn.conv2d(conv2, W3, strides=[1, 2, 2, 1], padding='SAME') + b3)
-    feature_vector = tf.reshape(conv3, [-1, 2 * 2 * 64])
-    full_con = tf.nn.relu(tf.matmul(feature_vector, W4) + b4)
-    result = tf.matmul(full_con, W5) + b5
+    # conv1 = tf.nn.relu(tf.nn.conv2d(pupil, pupil_weight.W1, strides=[1, 1, 1, 1], padding='SAME') + pupil_weight.b1)
+    # conv1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
+    # conv2 = tf.nn.relu(tf.nn.conv2d(conv1, pupil_weight.W2, strides=[1, 1, 1, 1], padding='SAME') + pupil_weight.b2)
+    # conv2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
+    # conv3 = tf.nn.relu(tf.nn.conv2d(conv2, pupil_weight.W3, strides=[1, 1, 1, 1], padding='SAME') + pupil_weight.b3)
+    # conv3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
+    
+    feature_vector = tf.reshape(conv3, [-1, 4 * 4 * 64])
+    full_con = tf.nn.relu(tf.matmul(feature_vector, pupil_weight.W4) + pupil_weight.b4)
 
-    return result
+
+    return full_con
 
 def image_cnn(image):
-    W1 = tf.Variable(tf.truncated_normal([5, 5, 3, 16], stddev = 0.1 / np.sqrt(75)))
-    b1 = tf.Variable(tf.constant(0.01, shape=[16]))
-    W2 = tf.Variable(tf.truncated_normal([5, 5, 16, 32], stddev = 0.1 / 20))
-    b2 = tf.Variable(tf.constant(0.01, shape=[32]))
-    W3 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev = 0.1 / np.sqrt(800)))
-    b3 = tf.Variable(tf.constant(0.01, shape=[64]))
-    W4 = tf.Variable(tf.random_normal([4 * 4 * 64, 50], stddev = 1.0 / 16))
-    b4 = tf.Variable(tf.constant(0.01, shape=[50]))
-    W5 = tf.Variable(tf.random_normal([50, 1], stddev = 1.0 / np.sqrt(50)))
-    b5 = tf.Variable(tf.constant(0.01, shape=[1]))
-
-    conv1 = tf.nn.relu(tf.nn.conv2d(image, W1, strides=[1, 2, 2, 1], padding='SAME') + b1)
-    conv2 = tf.nn.relu(tf.nn.conv2d(conv1, W2, strides=[1, 2, 2, 1], padding='SAME') + b2)
-    conv3 = tf.nn.relu(tf.nn.conv2d(conv2, W3, strides=[1, 2, 2, 1], padding='SAME') + b3)
+    conv1 = tf.nn.relu(tf.nn.conv2d(image, image_weight.W1, strides=[1, 2, 2, 1], padding='SAME') + image_weight.b1)
+    conv2 = tf.nn.relu(tf.nn.conv2d(conv1, image_weight.W2, strides=[1, 2, 2, 1], padding='SAME') + image_weight.b2)
+    conv3 = tf.nn.relu(tf.nn.conv2d(conv2, image_weight.W3, strides=[1, 2, 2, 1], padding='SAME') + image_weight.b3)
     feature_vector = tf.reshape(conv3, [-1, 4 * 4 * 64])
-    full_con = tf.nn.relu(tf.matmul(feature_vector, W4) + b4)
-    result = tf.matmul(full_con, W5) + b5
+    full_con = tf.nn.relu(tf.matmul(feature_vector, image_weight.W4) + image_weight.b4)
 
-    return result
+    return full_con
 
 def final_score(image, pupil):
     combine = tf.concat([image, pupil], 1)
-    W = tf.Variable(tf.random_normal([2, 2], stddev = 1.0 / 2))
+    W = tf.Variable(tf.random_normal([110, 2], stddev = 1.0 / np.sqrt(110)))
     b = tf.Variable(tf.constant(0.01, shape=[2]))
 
-    final_score = tf.nn.relu(tf.matmul(combine, W) + b)
+    final_score = tf.matmul(combine, W) + b
     final_score = tf.nn.softmax(final_score)
+
+    # W = tf.Variable(tf.random_normal([100, 2], stddev = 1.0 / np.sqrt(100)))
+    # b = tf.Variable(tf.constant(0.01, shape=[2]))
+
+    # final_score = tf.matmul(pupil, W) + b
+    # final_score = tf.nn.softmax(final_score)
 
     return final_score
 
