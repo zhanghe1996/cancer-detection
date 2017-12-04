@@ -33,8 +33,6 @@ def visualize(Xs, ys, prediction):
         plt.imshow(np.hstack([left_pupil, vetical_line, right_pupil]))
         plt.show()
 
-
-
 if __name__ == '__main__':
     args = parse_args()
     print('restoring model...')
