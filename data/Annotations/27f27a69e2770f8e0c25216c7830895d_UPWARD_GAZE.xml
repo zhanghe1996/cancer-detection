@@ -6,33 +6,33 @@
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>0</width>
-		<height>0</height>
+		<width>800</width>
+		<height>480</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>normal</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
 			<xmin>240</xmin>
-			<ymin>200</ymin>
-			<xmax>266</xmax>
-			<ymax>222</ymax>
+			<ymin>196</ymin>
+			<xmax>267</xmax>
+			<ymax>223</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>normal</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>539</xmin>
-			<ymin>209</ymin>
-			<xmax>563</xmax>
-			<ymax>232</ymax>
+			<xmin>540</xmin>
+			<ymin>206</ymin>
+			<xmax>565</xmax>
+			<ymax>231</ymax>
 		</bndbox>
 	</object>
 </annotation>

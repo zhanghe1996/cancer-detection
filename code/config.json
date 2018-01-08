@@ -9,8 +9,8 @@
         "DATA_PATH": "../data",
         "CSV_PATH": "../data/pupils2017.csv",
         "VERBOSE": True,
-        "TRAIN_NUM": 8,
-        "VAL_NUM": 5,
+        "TRAIN_NUM": 320,
+        "VAL_NUM": 30,
         "TEST_NUM": 0,
         "TRAIN": {
             "IMAGES": "../data/train_images.npy",
@@ -30,7 +30,14 @@
         "LEARNING_RATE": 0.0005,
         "IMAGE_SIDE": 32,
         "PUPIL_SIDE": 32,
-        "NB_STEPS": 1001,
-        "BATCH_SIZE": 128
+        "NB_STEPS": 801,
+        "BATCH_SIZE": 50
+    },
+    "DIAGNOSIS_MAP": {
+        "Normal": 0,
+        "Retinoblastoma": 1,
+        "Cataract": 2,
+        "Melanoma": 3,
+        "Other": 4
     }
 }

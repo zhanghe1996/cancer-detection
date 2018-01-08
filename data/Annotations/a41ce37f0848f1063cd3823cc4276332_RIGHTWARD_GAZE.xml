@@ -12,27 +12,27 @@
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>cancer</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>1475</xmin>
-			<ymin>1625</ymin>
-			<xmax>1684</xmax>
-			<ymax>1766</ymax>
+			<xmin>1470</xmin>
+			<ymin>1649</ymin>
+			<xmax>1673</xmax>
+			<ymax>1761</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>normal</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>2802</xmin>
-			<ymin>1543</ymin>
-			<xmax>3016</xmax>
-			<ymax>1684</ymax>
+			<xmin>2823</xmin>
+			<ymin>1568</ymin>
+			<xmax>2993</xmax>
+			<ymax>1672</ymax>
 		</bndbox>
 	</object>
 </annotation>

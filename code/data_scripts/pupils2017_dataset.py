@@ -90,7 +90,7 @@ def read_data_set(data, split_name, one_hot, balance_classes):
     return images, labels
 
 
-def read_data_sets(one_hot=True,
+def read_data_sets(one_hot=False,
                    balance_classes=False,
                    dtype=dtypes.float32,
                    reshape=True):

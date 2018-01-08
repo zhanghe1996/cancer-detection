@@ -5,6 +5,8 @@ import pandas
 
 from utils.config import get, print_if_verbose
 
+diagonsis_size = len(get('DIAGNOSIS_MAP'))
+
 def remove_images(images, labels):
     removed = []
     for i in range(images.shape[0]):
@@ -35,8 +37,11 @@ class PUPILS2017:
         image_side = get("TRAIN.IMAGE_SIDE")
         pupil_side = get("TRAIN.PUPIL_SIDE")
 
-        images = matrix[:, :(3 * image_side ** 2 + 6 * pupil_side ** 2)]
-        labels = matrix[:, -2:]
+        # images = matrix[:, :(3 * image_side ** 2 + 6 * pupil_side ** 2)]
+        # labels = matrix[:, -2:]
+        images = matrix[:, :(3 * pupil_side ** 2)]
+        labels = matrix[:, -1:]
+        labels = np.reshape(labels, -1)
 
         return images, labels
 
@@ -53,9 +58,22 @@ class PUPILS2017:
 
     def balance_classes(self, images, labels, count=5000):
         balanced_images, balanced_labels = [], []
-        unique_labels = set(labels)
+        
+        # unique_labels = set(labels)
+        unique_labels = []
+        for i in range(0, diagonsis_size):
+            for j in range(0, diagonsis_size):
+                unique_labels.append([i, j])
+
         for l in unique_labels:
-            l_idx = np.where(labels == l)[0]
+            # l_idx = np.where(labels == l)[0]
+            l_idx = []
+            for i, label in enumerate(labels):
+                if np.array_equal(label, l):
+                    l_idx.append(i)
+            if l_idx == []:
+                continue
+
             l_images, l_labels = images[l_idx], labels[l_idx]
             # Consistent resampling to facilitate debugging
             resampled_images, resampled_labels = resample(l_images,
@@ -81,7 +99,7 @@ class PUPILS2017:
             resized.append(resized_image)
         return np.array(resized)
 
-    def preprocessed_data(self, split, dim=32, one_hot=True, balance_classes=False):
+    def preprocessed_data(self, split, dim=32, one_hot=False, balance_classes=False):
         if not self.data_stored:
             self.read_csv()
         if split == 'train':
@@ -89,19 +107,19 @@ class PUPILS2017:
             images, labels = self.train_images, self.train_labels
 
             if balance_classes:
-                images, labels = self.balance_classes(images, labels, 5000)
+                images, labels = self.balance_classes(images, labels, get('DATA.TRAIN_NUM'))
         elif split == 'val':
             print_if_verbose('Loading validation data...')
             images, labels = self.val_images, self.val_labels
 
             if balance_classes:
-                images, labels = self.balance_classes(images, labels, 500)
+                images, labels = self.balance_classes(images, labels, get('DATA.VAL_NUM'))
         elif split == 'test':
             print_if_verbose('Loading test data...')
             images, labels = self.test_images, self.test_labels
 
             if balance_classes:
-                images, labels = self.balance_classes(images, labels, 500)
+                images, labels = self.balance_classes(images, labels, get('DATA.TEST_NUM'))
         else:
             print_if_verbose('Invalid input!')
             return
@@ -115,11 +133,14 @@ class PUPILS2017:
         # images = np.expand_dims(images, axis = 3)
 
         if one_hot == True:
-            new_labels = np.zeros((labels.shape[0], 4), dtype = np.float32)
+            # new_labels = np.zeros((labels.shape[0], diagonsis_size * 2), dtype = np.float32)
+            new_labels = np.zeros((labels.shape[0], diagonsis_size), dtype = np.float32)
             for i in range(labels.shape[0]):
-                new_labels[i][int(labels[i][0])] = 1
-                new_labels[i][int(labels[i][1] + 2)] = 1
+                new_labels[i][int(labels[i])] = 1
+                # new_labels[i][int(labels[i][0])] = 1
+                # new_labels[i][int(labels[i][1] + diagonsis_size)] = 1
             labels = new_labels
+            print labels
 
         print_if_verbose('---Images shape: {}'.format(images.shape))
         print_if_verbose('---Labels shape: {}'.format(labels.shape))

@@ -22,18 +22,18 @@ def report_training_progress(batch_index, input_layer, loss_func, data):
         return
 
     error = loss_func.eval(feed_dict={input_layer: data.train.images, 
-                           true_labels: data.train.labels})
-    acc = accuracy.eval(feed_dict={input_layer: data.train.images, 
                         true_labels: data.train.labels})
+    # acc = accuracy.eval(feed_dict={input_layer: data.train.images, 
+                        # true_labels: data.train.labels})
     print('\n \t training cross_entropy is about %f' % error)
-    print(' \t training accuracy is about %f' % acc)
+    # print(' \t training accuracy is about %f' % acc)
 
     error = loss_func.eval(feed_dict={input_layer: data.validation.images, 
                            true_labels: data.validation.labels})
-    acc = accuracy.eval(feed_dict={input_layer: data.validation.images, 
-                        true_labels: data.validation.labels})
+    # acc = accuracy.eval(feed_dict={input_layer: data.validation.images, 
+                        # true_labels: data.validation.labels})
     print(' \t validation cross_entropy is about %f' % error)
-    print(' \t validation accuracy is about %f' % acc)
+    # print(' \t validation accuracy is about %f' % acc)
 
 
 def train_cnn(input_layer, prediction_layer, loss_func, optimizer, data):
@@ -51,8 +51,10 @@ if __name__ == '__main__':
     print('building model...')
     sess = tf.InteractiveSession()  # start talking to tensorflow backend
     input_layer, prediction_layer = cnn()  # fetch model layers
-    true_labels = tf.placeholder(tf.float32, shape=[None, 4])
-    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=true_labels, logits=prediction_layer)) # define the loss function
+    # true_labels = tf.placeholder(tf.float32, shape=[None, len(get('DIAGNOSIS_MAP')) * 2])
+    true_labels = tf.placeholder(tf.int32, shape=[None])
+    # cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=true_labels, logits=prediction_layer)) # define the loss function
+    cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=true_labels, logits=prediction_layer))
     correct_prediction = tf.equal(tf.argmax(prediction_layer, 1), tf.argmax(true_labels, 1)) # define the correct predictions calculation
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32)) # calculate accuracy
     optimizer = tf.train.AdamOptimizer(get('TRAIN.LEARNING_RATE')).minimize(cross_entropy) # define the training step
@@ -62,7 +64,7 @@ if __name__ == '__main__':
     get_weights(saver, sess)
 
     print('loading data...')
-    data = read_data_sets(one_hot=True)
+    data = read_data_sets(one_hot=False, balance_classes=False)
 
     print('training...')
     train_cnn(input_layer, prediction_layer, cross_entropy, optimizer, data)

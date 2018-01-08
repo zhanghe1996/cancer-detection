@@ -6,32 +6,32 @@
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>0</width>
-		<height>0</height>
+		<width>4032</width>
+		<height>2268</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>normal</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>1602</xmin>
-			<ymin>1084</ymin>
-			<xmax>1752</xmax>
-			<ymax>1184</ymax>
+			<xmin>1593</xmin>
+			<ymin>1068</ymin>
+			<xmax>1762</xmax>
+			<ymax>1192</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>cancer</name>
+		<name>pupil</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
 			<xmin>2566</xmin>
-			<ymin>1034</ymin>
-			<xmax>2684</xmax>
+			<ymin>1026</ymin>
+			<xmax>2685</xmax>
 			<ymax>1107</ymax>
 		</bndbox>
 	</object>
