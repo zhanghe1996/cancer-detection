@@ -1,6 +1,9 @@
 models/
 checkpoints/
-data/
 old_data/
 *.pyc
 *.csv
+*.json
+*.jpeg
+*.xml
+*.txt
