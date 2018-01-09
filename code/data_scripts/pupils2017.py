@@ -34,12 +34,11 @@ class PUPILS2017:
         self.data_stored = False
 
     def get_images_labels(self, matrix):
-        image_side = get("TRAIN.IMAGE_SIDE")
+        eye_side = get("TRAIN.EYE_SIDE")
         pupil_side = get("TRAIN.PUPIL_SIDE")
 
-        # images = matrix[:, :(3 * image_side ** 2 + 6 * pupil_side ** 2)]
-        # labels = matrix[:, -2:]
-        images = matrix[:, :(3 * pupil_side ** 2)]
+        images = matrix[:, :(3 * eye_side ** 2 + 3 * pupil_side ** 2)]
+        # images = matrix[:, :(3 * pupil_side ** 2)]
         labels = matrix[:, -1:]
         labels = np.reshape(labels, -1)
 

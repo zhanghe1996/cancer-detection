@@ -37,39 +37,37 @@ def getAccuracy(ys, prediction):
 def visualize(Xs, ys, prediction):
     rm = getReverseDiagnosisMap()
 
-    # image_side = get('TRAIN.IMAGE_SIDE')
-    # pupil_side = get('TRAIN.PUPIL_SIDE')
-    # image_size = image_side * image_side * 3
-    # pupil_size = pupil_side * pupil_side * 3
-    # for index in range(prediction.shape[0]):
-    #     left_pupil = Xs[index][image_size : image_size + pupil_size].reshape((pupil_side, pupil_side, 3))
-    #     left_pupil = (1 - left_pupil) * 127.5
-    #     right_pupil = Xs[index][image_size + pupil_size:].reshape((pupil_side, pupil_side, 3))
-    #     right_pupil = (1 - right_pupil) * 127.5
-    #     plt.title('Left Pupil: {Ground Truth: %s, Prediction: %s}\n Right Pupil: {Ground Truth: %s, Prediction: %s}' 
-    #         %(
-    #             rm[np.argmax(ys[index][:diagonsis_size])], 
-    #             rm[np.argmax(prediction[index][:diagonsis_size])], 
-    #             rm[np.argmax(ys[index][-diagonsis_size:])], 
-    #             rm[np.argmax(prediction[index][-diagonsis_size:])]
-    #         )
-    #     )
-    #     vetical_line = np.zeros((pupil_side, 1, 3))
-    #     plt.imshow(np.hstack([left_pupil, vetical_line, right_pupil]))
-    #     plt.show()
-
+    eye_side = get('TRAIN.EYE_SIDE')
     pupil_side = get('TRAIN.PUPIL_SIDE')
+    eye_size = eye_side * eye_side * 3
     pupil_size = pupil_side * pupil_side * 3
-
     for index in range(prediction.shape[0]):
-        pupil = Xs[index].reshape((pupil_side, pupil_side, 3))
+        eye = Xs[index][:eye_size].reshape((eye_side, eye_side, 3))
+        eye = (1 - eye) * 127.5
+        pupil = Xs[index][eye_size : eye_size + pupil_size].reshape((pupil_side, pupil_side, 3))
         pupil = (1 - pupil) * 127.5
-        gt = rm[np.argmax(ys[index])]
-        p = rm[np.argmax(prediction[index])]
-        plt.title('Ground Truth: %s, Prediction: %s' %(gt, p))
+        plt.title('Ground Truth: %s, Prediction: %s' 
+            %(
+                rm[np.argmax(ys[index])], 
+                rm[np.argmax(prediction[index])], 
+            )
+        )
         vetical_line = np.zeros((pupil_side, 1, 3))
-        plt.imshow(np.hstack([pupil]))
+        plt.imshow(np.hstack([eye, vetical_line, pupil]))
         plt.show()
+
+    # pupil_side = get('TRAIN.PUPIL_SIDE')
+    # pupil_size = pupil_side * pupil_side * 3
+
+    # for index in range(prediction.shape[0]):
+    #     pupil = Xs[index].reshape((pupil_side, pupil_side, 3))
+    #     pupil = (1 - pupil) * 127.5
+    #     gt = rm[np.argmax(ys[index])]
+    #     p = rm[np.argmax(prediction[index])]
+    #     plt.title('Ground Truth: %s, Prediction: %s' %(gt, p))
+    #     vetical_line = np.zeros((pupil_side, 1, 3))
+    #     plt.imshow(np.hstack([pupil]))
+    #     plt.show()
 
 if __name__ == '__main__':
     args = parse_args()

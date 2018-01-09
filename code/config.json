@@ -9,7 +9,7 @@
         "DATA_PATH": "../data",
         "CSV_PATH": "../data/pupils2017.csv",
         "VERBOSE": True,
-        "TRAIN_NUM": 320,
+        "TRAIN_NUM": 300,
         "VAL_NUM": 30,
         "TEST_NUM": 0,
         "TRAIN": {
@@ -28,7 +28,7 @@
     "TRAIN": {
         "CHECKPOINT": "../checkpoints/cnn.ckpt",
         "LEARNING_RATE": 0.0005,
-        "IMAGE_SIDE": 32,
+        "EYE_SIDE": 32,
         "PUPIL_SIDE": 32,
         "NB_STEPS": 801,
         "BATCH_SIZE": 50
