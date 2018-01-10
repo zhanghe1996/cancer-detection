@@ -8,6 +8,7 @@ from models.build_cnn import cnn
 from utils.config import get, is_file_prefix
 from data_scripts.pupils2017_dataset import read_data_sets
 
+gaze_size = len(get('DATA.GAZES'))
 diagonsis_size = len(get('DIAGNOSIS_MAP'))
 
 def parse_args():
@@ -34,6 +35,25 @@ def getAccuracy(ys, prediction):
 
     return count / ys.shape[0]
 
+def getDetailedPerformance(ys, prediction):
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for index in range(prediction.shape[0]):
+        if np.argmax(prediction[index]) == 0:
+            if np.argmax(ys[index]) == 0:
+                tn += 1
+            else:
+                fn += 1
+        else:
+            if np.argmax(ys[index]) == 0:
+                fp += 1
+            else:
+                tp += 1
+
+    return tp, tn, fp, fn
+
 def visualize(Xs, ys, prediction):
     rm = getReverseDiagnosisMap()
 
@@ -41,33 +61,27 @@ def visualize(Xs, ys, prediction):
     pupil_side = get('TRAIN.PUPIL_SIDE')
     eye_size = eye_side * eye_side * 3
     pupil_size = pupil_side * pupil_side * 3
-    for index in range(prediction.shape[0]):
-        eye = Xs[index][:eye_size].reshape((eye_side, eye_side, 3))
-        eye = (1 - eye) * 127.5
-        pupil = Xs[index][eye_size : eye_size + pupil_size].reshape((pupil_side, pupil_side, 3))
-        pupil = (1 - pupil) * 127.5
-        plt.title('Ground Truth: %s, Prediction: %s' 
-            %(
-                rm[np.argmax(ys[index])], 
-                rm[np.argmax(prediction[index])], 
+    vetical_line = np.zeros((pupil_side, 1, 3))
+
+    for i in range(prediction.shape[0]):
+        for j in range(gaze_size):
+            eye = Xs[i][(eye_size + pupil_size) * j : (eye_size + pupil_size) * j + eye_size].reshape((eye_side, eye_side, 3))
+            eye = (1 - eye) * 127.5
+            pupil = Xs[i][(eye_size + pupil_size) * j + eye_size : (eye_size + pupil_size) * (j + 1)].reshape((pupil_side, pupil_side, 3))
+            pupil = (1 - pupil) * 127.5
+            plt.title('Ground Truth: %s, Prediction: %s' 
+                %(
+                    rm[np.argmax(ys[i])], 
+                    rm[np.argmax(prediction[i])], 
+                )
             )
-        )
-        vetical_line = np.zeros((pupil_side, 1, 3))
-        plt.imshow(np.hstack([eye, vetical_line, pupil]))
+            if j == 0: 
+                im = np.hstack([eye, vetical_line, pupil])
+            else:
+                im = np.vstack((im, np.hstack([eye, vetical_line, pupil])))
+
+        plt.imshow(im)
         plt.show()
-
-    # pupil_side = get('TRAIN.PUPIL_SIDE')
-    # pupil_size = pupil_side * pupil_side * 3
-
-    # for index in range(prediction.shape[0]):
-    #     pupil = Xs[index].reshape((pupil_side, pupil_side, 3))
-    #     pupil = (1 - pupil) * 127.5
-    #     gt = rm[np.argmax(ys[index])]
-    #     p = rm[np.argmax(prediction[index])]
-    #     plt.title('Ground Truth: %s, Prediction: %s' %(gt, p))
-    #     vetical_line = np.zeros((pupil_side, 1, 3))
-    #     plt.imshow(np.hstack([pupil]))
-    #     plt.show()
 
 if __name__ == '__main__':
     args = parse_args()
@@ -102,6 +116,12 @@ if __name__ == '__main__':
 
     print 'Total precision: %f' %average_precision_score(ys.ravel(), prediction.ravel())
     print 'Total accuracy: %f' %getAccuracy(ys, prediction)
+
+    tp, tn, fp, fn = getDetailedPerformance(ys, prediction)
+    print 'True Positive: %d' %tp
+    print 'True Negative: %d' %tn
+    print 'False Positive: %d' %fp
+    print 'False Negative: %d' %fn
 
     visualize(Xs, ys, prediction)
 

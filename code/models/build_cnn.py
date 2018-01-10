@@ -5,6 +5,7 @@ import sys
 from utils.config import get
 
 eye_side = get("TRAIN.EYE_SIDE")
+gaze_size = len(get("DATA.GAZES"))
 pupil_side = get("TRAIN.PUPIL_SIDE")
 diagonsis_size = len(get('DIAGNOSIS_MAP'))
 
@@ -67,31 +68,34 @@ def final_score(eye, pupil):
 
     return final_score
 
+def correlated_layer(pred_layer):
+    W = tf.Variable(tf.random_normal([diagonsis_size * gaze_size, diagonsis_size], stddev = 1.0 / np.sqrt(diagonsis_size * gaze_size)))
+    b = tf.Variable(tf.constant(0.01, shape=[diagonsis_size]))
+
+    pred_layer = tf.matmul(pred_layer, W) + b
+    return pred_layer
 
 def cnn():
     eye_size = 3 * eye_side ** 2
     pupil_size = 3 * pupil_side ** 2
 
-    input_layer = tf.placeholder(tf.float32, shape=[None, eye_size + pupil_size])
-    eye, pupil = tf.split(input_layer, [eye_size, pupil_size], 1)
+    input_layer = tf.placeholder(tf.float32, shape=[None, (eye_size + pupil_size) * gaze_size])
 
-    eye = tf.reshape(eye, [-1, eye_side, eye_side, 3])
-    pupil = tf.reshape(pupil, [-1, pupil_side, pupil_side, 3])
+    for i in range(gaze_size): 
+        eye = tf.slice(input_layer, [0, (eye_size + pupil_size) * i], [tf.shape(input_layer)[0], eye_size])
+        pupil = tf.slice(input_layer, [0, (eye_size + pupil_size) * i + eye_size], [tf.shape(input_layer)[0], pupil_size])
 
-    eye = eye_cnn(eye)
-    pupil = pupil_cnn(pupil)
+        eye = tf.reshape(eye, [-1, eye_side, eye_side, 3])
+        pupil = tf.reshape(pupil, [-1, pupil_side, pupil_side, 3])
 
-    pred_layer = final_score(eye, pupil)
+        eye = eye_cnn(eye)
+        pupil = pupil_cnn(pupil)
 
-
-
-    # pupil_size = 3 * pupil_side ** 2
-    # input_layer = tf.placeholder(tf.float32, shape=[None, pupil_size])
-
-    # pupil = tf.reshape(input_layer, [-1, pupil_side, pupil_side, 3])
-    # pupil = pupil_cnn(pupil)
-
-    # pred_layer = final_score(pupil)
+        if i == 0:
+            pred_layer = final_score(eye, pupil)
+        else:
+            pred_layer = tf.concat([pred_layer, final_score(eye, pupil)], 1)
+    pred_layer = correlated_layer(pred_layer)
 
     return input_layer, pred_layer
 

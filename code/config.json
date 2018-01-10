@@ -9,7 +9,7 @@
         "DATA_PATH": "../data",
         "CSV_PATH": "../data/pupils2017.csv",
         "VERBOSE": True,
-        "TRAIN_NUM": 300,
+        "TRAIN_NUM": 110,
         "VAL_NUM": 30,
         "TEST_NUM": 0,
         "TRAIN": {
@@ -23,7 +23,8 @@
         "TEST": {
             "IMAGES": "../data/test_images.npy",
             "LABELS": "../data/test_labels.npy"
-        }
+        },
+        "GAZES": ["FORWARD_GAZE", "LEFTWARD_GAZE", "RIGHTWARD_GAZE", "UPWARD_GAZE"]
     },
     "TRAIN": {
         "CHECKPOINT": "../checkpoints/cnn.ckpt",
@@ -35,9 +36,6 @@
     },
     "DIAGNOSIS_MAP": {
         "Normal": 0,
-        "Retinoblastoma": 1,
-        "Cataract": 2,
-        "Melanoma": 3,
-        "Other": 4
+        "Other": 1
     }
 }

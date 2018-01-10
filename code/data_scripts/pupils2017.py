@@ -37,8 +37,9 @@ class PUPILS2017:
         eye_side = get("TRAIN.EYE_SIDE")
         pupil_side = get("TRAIN.PUPIL_SIDE")
 
-        images = matrix[:, :(3 * eye_side ** 2 + 3 * pupil_side ** 2)]
+        # images = matrix[:, :(3 * eye_side ** 2 + 3 * pupil_side ** 2)]
         # images = matrix[:, :(3 * pupil_side ** 2)]
+        images = matrix[:, :-1]
         labels = matrix[:, -1:]
         labels = np.reshape(labels, -1)
 
