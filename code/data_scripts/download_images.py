@@ -5,7 +5,13 @@ import urllib2
 from utils.config import get
 
 def main():
-	im_dir = os.path.join(get("DATA.DATA_PATH"), 'Images')
+	date = input("Image from date (YYYY-MM-DD): ")
+	test_data = input("Is these for testing: ")
+
+	if test_data:
+		im_dir = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'Images')
+	else:
+		im_dir = os.path.join(get("DATA.DATA_PATH"), 'Images')
 
 	with open(os.path.join(get("DATA.DATA_PATH"), 'EyeSnap_2017_v10.json')) as json_file:
 		data = json.load(json_file)
@@ -16,9 +22,11 @@ def main():
 		if 'LEFT_EYE_DIAGNOSIS' not in case or 'RIGHT_EYE_DIAGNOSIS' not in case:
 			continue
 
+		if case['updatedAt'] < date:
+			continue
+
 		left_dia = case['LEFT_EYE_DIAGNOSIS']
 		right_dia = case['RIGHT_EYE_DIAGNOSIS']
-		print left_dia, right_dia
 
 		for gaze in gazes:
 			if gaze in case:

@@ -36,9 +36,10 @@ class PUPILS2017:
     def get_images_labels(self, matrix):
         eye_side = get("TRAIN.EYE_SIDE")
         pupil_side = get("TRAIN.PUPIL_SIDE")
-
+        
         images = matrix[:, :(3 * eye_side ** 2 + 3 * pupil_side ** 2)]
         # images = matrix[:, :(3 * pupil_side ** 2)]
+
         labels = matrix[:, -1:]
         labels = np.reshape(labels, -1)
 
@@ -139,12 +140,12 @@ class PUPILS2017:
                 # new_labels[i][int(labels[i][0])] = 1
                 # new_labels[i][int(labels[i][1] + diagonsis_size)] = 1
             labels = new_labels
-            print labels
+            # print labels
 
         print_if_verbose('---Images shape: {}'.format(images.shape))
         print_if_verbose('---Labels shape: {}'.format(labels.shape))
-        print images
-        print labels
+        # print images
+        # print labels
         return images, labels
 
 

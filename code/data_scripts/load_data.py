@@ -1,15 +1,31 @@
 import re
 import os
 import cv2
+import csv
 import json
+import argparse
 import numpy as np
 from PIL import Image
+from random import shuffle
 import matplotlib.pyplot as plt
 import xml.dom.minidom as minidom
 
 from utils.config import get
 
 m = get('DIAGNOSIS_MAP')
+eye_side = get("TRAIN.EYE_SIDE")
+pupil_side = get("TRAIN.PUPIL_SIDE")
+# feature_dim = 3 * pupil_side ** 2 + 1
+feature_dim = 3 * eye_side ** 2 + 3 * pupil_side ** 2 + 1 + 2
+
+def parse_args():
+    """Parse input arguments."""
+    parser = argparse.ArgumentParser(description='Faster R-CNN demo')
+    parser.add_argument('--test', dest='test', action='store_true')
+
+    args = parser.parse_args()
+
+    return args
 
 def get_data_from_tag(node,tag):
 	return node.getElementsByTagName(tag)[0].childNodes[0].data
@@ -26,19 +42,36 @@ def getEyeIndex(eye_boxes, pupil_box):
 			return i
 	return -1
 
-def main():
-	# get config
-	im_dir = os.path.join(get("DATA.DATA_PATH"), 'Images')
-	ann_dir = os.path.join(get("DATA.DATA_PATH"), 'Annotations')
-	image_sets = os.path.join(get("DATA.DATA_PATH"), 'ImageSets', 'train.txt')
+def order_compare(x, y):
+	if x[feature_dim - 3] == 0 or y[feature_dim - 3] == 0:
+		return 1
 
-	eye_side = get("TRAIN.EYE_SIDE")
-	pupil_side = get("TRAIN.PUPIL_SIDE")
-	feature_dim = 3 * eye_side ** 2 + 3 * pupil_side ** 2 + 1
-	# feature_dim = 3 * pupil_side ** 2 + 1
-	
+	if x[feature_dim - 3] > y[feature_dim - 3]:
+		return 1
+	elif x[feature_dim - 3] == y[feature_dim - 3]:
+		if x[feature_dim - 2] > y[feature_dim - 2]:
+			return 1
+		else:
+			return -1
+	else:
+		return -1
+
+def main():
+	args = parse_args()
+
+	# get config
+	if args.test:
+		im_dir = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'Images')
+		ann_dir = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'Annotations')
+		image_sets = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'ImageSets', 'train.txt')
+	else:
+		im_dir = os.path.join(get("DATA.DATA_PATH"), 'Images')
+		ann_dir = os.path.join(get("DATA.DATA_PATH"), 'Annotations')
+		image_sets = os.path.join(get("DATA.DATA_PATH"), 'ImageSets', 'train.txt')
+
 	# initialize diagnosis map
 	diagnosis_map = {}
+	object_id_map = {}
 
 	with open(os.path.join(get("DATA.DATA_PATH"), 'EyeSnap_2017_v10.json')) as json_file:
 		data = json.load(json_file)
@@ -56,12 +89,15 @@ def main():
 				getDiagnosisIndex(case['LEFT_EYE_DIAGNOSIS'])
 			]
 
+			object_id_map[case[gaze]['name']] = case['objectId']
+
 	# get all image names from train.txt
 	with open(image_sets) as f:
 		image_names = f.read().splitlines()
 
-	output = None
+	output = [[0] * feature_dim]
 	for image_name in image_names:
+
 		if image_name not in diagnosis_map:
 			continue
 
@@ -80,9 +116,15 @@ def main():
 
 		objs = data.getElementsByTagName('object')
 		num_objs = len(objs)
-		assert(num_objs == 2)
+		
+		# assert(num_objs == 2)
+		if num_objs != 2:
+			continue
+
 		pupil_boxes = np.zeros((num_objs, 4), dtype = np.uint16)
 		labels = np.zeros(num_objs, dtype = np.uint16)
+
+		left_right_strings = np.array(['left', 'right'])
 
 		for ix, obj in enumerate(objs):
 			labels[ix] = diagnosis_map[image_name][ix]
@@ -94,6 +136,7 @@ def main():
 		# exchange boxes when pupil_boxes[0] is actually the right pupil
 		if pupil_boxes[0][0] > pupil_boxes[1][0]:
 			pupil_boxes[[0, 1]] = pupil_boxes[[1, 0]]
+			left_right_strings[[0, 1]] = left_right_strings[[1, 0]]
 
 		eye_boxes = np.load(eye_file)
 
@@ -125,17 +168,29 @@ def main():
 			eye_pix = eye_pix / 127.5 - 1
 
 			feature = np.append(eye_pix, pupil_pix)
-			feature = np.append(feature, labels[i])
-			assert(feature.shape[0] == feature_dim)
 
-			if output is None:
-				output = feature
-			else:
-				output = np.vstack((output, feature))
+			feature = feature.tolist()
+			feature.append(object_id_map[image_name])
+			feature.append(left_right_strings[i])
+			feature.append(labels[i])
 
-	np.random.shuffle(output)
-	output = np.vstack((np.zeros(feature_dim), output))
-	np.savetxt(get("DATA.CSV_PATH"), output, delimiter = ",", fmt = "%f")
+			assert(len(feature) == feature_dim)
+
+			output.append(feature)
+
+	if args.test:
+		output = sorted(output, cmp=order_compare)
+	else:
+		shuffle(output)
+	
+	if args.test: 
+		with open(get("DATA.TEST_CSV_PATH"), 'wb') as csv_file:
+		    wr = csv.writer(csv_file, lineterminator='\n')
+		    wr.writerows(output)
+	else:
+		with open(get("DATA.CSV_PATH"), 'wb') as csv_file:
+		    wr = csv.writer(csv_file, lineterminator='\n')
+		    wr.writerows(output)
 
 if __name__ == "__main__":
 	main()
