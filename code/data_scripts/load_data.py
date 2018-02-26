@@ -59,7 +59,7 @@ def order_compare(x, y):
 def main():
 	args = parse_args()
 
-	# get config
+	# get directories from config
 	if args.test:
 		im_dir = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'Images')
 		ann_dir = os.path.join(get("DATA.DATA_PATH"), 'test_data', 'Annotations')
@@ -117,7 +117,7 @@ def main():
 		objs = data.getElementsByTagName('object')
 		num_objs = len(objs)
 		
-		# assert(num_objs == 2)
+		# continue if the number of pupils is not two
 		if num_objs != 2:
 			continue
 
@@ -126,6 +126,7 @@ def main():
 
 		left_right_strings = np.array(['left', 'right'])
 
+		# load pupil position in xml file
 		for ix, obj in enumerate(objs):
 			labels[ix] = diagnosis_map[image_name][ix]
 			pupil_boxes[ix][0] = int(get_data_from_tag(obj, 'xmin'))
@@ -140,14 +141,11 @@ def main():
 
 		eye_boxes = np.load(eye_file)
 
+		# generate new lines of data 
 		for i in range(2):
 			pupil = im.crop(pupil_boxes[i])
 			pupil = pupil.resize((pupil_side, pupil_side), Image.ANTIALIAS)
 			pupil_pix = np.array(pupil, dtype = np.float32)
-
-			# pupil_pix = 255 - pupil_pix
-			# plt.imshow(pupil_pix)
-			# plt.show()
 
 			pupil_pix = np.reshape(pupil_pix, (-1))
 			pupil_pix = pupil_pix / 127.5 - 1

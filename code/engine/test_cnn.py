@@ -117,11 +117,11 @@ def test_on_checkpoints(iters, Xs, ys, if_visualize):
 
         sess = tf.InteractiveSession()  # start talking to tensorflow backend
         saver = tf.train.Saver()  # prepare to restore weights
-        saver.restore(sess, os.path.join('..', 'checkpoints', 'iter_' + str(iter), 'cnn.ckpt'))
+        saver.restore(sess, os.path.join('..', 'checkpoints', 'iter_' + str(iter), 'cnn.ckpt')) # load weights from checkpoints
         # saver.restore(sess, get('TRAIN.CHECKPOINT'))
         
         print('computing reconstructions...')
-        prediction = prediction_layer.eval(feed_dict={input_layer: Xs, keep_prob: 1.0})
+        prediction = prediction_layer.eval(feed_dict={input_layer: Xs, keep_prob: 1.0}) # obtian predictions
 
         # print 'Ground True:'
         # print ys
@@ -149,6 +149,7 @@ if __name__ == '__main__':
     print('loading data...')
     data = read_data_sets(one_hot=True, balance_classes=False)
 
+    # get corresponding dataset according to flag
     if args.set == 'train':
         Xs = data.train.images
         ys = data.train.labels
