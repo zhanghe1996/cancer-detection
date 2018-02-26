@@ -162,48 +162,4 @@ if __name__ == '__main__':
     test_on_checkpoints(iters, Xs, ys, False)
 
 
-    # iter = 200
-    # while iter < get('TRAIN.NB_STEPS'):
-    #     print 'iteration ' + str(iter) + ': '
-
-    #     saver.restore(sess, os.path.join('..', 'checkpoints', 'iter_' + str(iter), 'cnn.ckpt'))
-    #     # saver.restore(sess, get('TRAIN.CHECKPOINT'))
-        
-    #     print('Yay! I restored weights from a saved model!')
-    #     print('loading data...')
-    #     data = read_data_sets(one_hot=True, balance_classes=False)
-
-    #     if args.test:
-    #         Xs, ys = load_test_data()
-    #     else: 
-    #         if args.set == 'train':
-    #             Xs = data.train.images
-    #             ys = data.train.labels
-    #         elif args.set == 'validation':
-    #             Xs = data.validation.images
-    #             ys = data.validation.labels
-    #         else:
-    #             Xs = data.test.images
-    #             ys = data.test.labels
-
-    #     print('computing reconstructions...')
-    #     prediction = prediction_layer.eval(feed_dict={input_layer: Xs})
-
-    #     # print 'Ground True:'
-    #     # print ys
-    #     # print 'Prediction:'
-    #     # print prediction
-
-    #     print 'Total precision: %f' %average_precision_score(ys.ravel(), prediction.ravel())
-    #     print 'Total accuracy: %f' %getAccuracy(ys, prediction)
-
-    #     tp, tn, fp, fn = getDetailedPerformance(ys, prediction)
-    #     print 'True Positive: %d' %tp
-    #     print 'True Negative: %d' %tn
-    #     print 'False Positive: %d' %fp
-    #     print 'False Negative: %d' %fn
-
-    #     iter += 200
-
-
 
