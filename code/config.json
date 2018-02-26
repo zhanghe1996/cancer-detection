@@ -32,7 +32,8 @@
         "EYE_SIDE": 32,
         "PUPIL_SIDE": 32,
         "NB_STEPS": 1001,
-        "BATCH_SIZE": 50
+        "BATCH_SIZE": 50,
+        "DROP_OUR_KEEP_PROB": 0.65
     },
     "DIAGNOSIS_MAP": {
         "Normal": 0,

@@ -43,7 +43,7 @@ def train_cnn(input_layer, prediction_layer, keep_prob, loss_func, optimizer, da
         for batch_index in range(get('TRAIN.NB_STEPS')):
             report_training_progress(batch_index, input_layer, keep_prob, loss_func, data) 
             batch_images, batch_labels = data.train.next_batch(get('TRAIN.BATCH_SIZE'))
-            optimizer.run(feed_dict={input_layer: batch_images, true_labels: batch_labels, keep_prob: 0.5})
+            optimizer.run(feed_dict={input_layer: batch_images, true_labels: batch_labels, keep_prob: get('TRAIN.DROP_OUR_KEEP_PROB')})
 
             if batch_index != 0 and batch_index % 200 == 0:
                 path = os.path.join('..', 'checkpoints', 'iter_' + str(batch_index))
