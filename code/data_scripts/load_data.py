@@ -22,6 +22,7 @@ def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Faster R-CNN demo')
     parser.add_argument('--test', dest='test', action='store_true')
+    parser.add_argument('--auto', dest='auto', action='store_true')
 
     args = parser.parse_args()
 
@@ -95,6 +96,8 @@ def main():
 	with open(image_sets) as f:
 		image_names = f.read().splitlines()
 
+	count = 0
+
 	output = [[0] * feature_dim]
 	for image_name in image_names:
 
@@ -103,7 +106,10 @@ def main():
 
 		print image_name
 		im_file = os.path.join(im_dir, image_name + '.jpeg')
-		pupil_file = os.path.join(ann_dir, 'pupil', image_name + '.xml')
+		if args.auto: # use xml files generate automatically
+			pupil_file = os.path.join(ann_dir, 'pupil_auto', image_name + '.xml')
+		else: # use manually generated xml files 
+			pupil_file = os.path.join(ann_dir, 'pupil', image_name + '.xml')
 		eye_file = os.path.join(ann_dir, 'eye', image_name + '_eye.npy')
 
 		if not os.path.isfile(pupil_file):
