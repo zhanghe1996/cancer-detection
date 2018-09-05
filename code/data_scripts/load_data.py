@@ -130,7 +130,7 @@ def main():
 		pupil_boxes = np.zeros((num_objs, 4), dtype = np.uint16)
 		labels = np.zeros(num_objs, dtype = np.uint16)
 
-		left_right_strings = np.array(['left', 'right'])
+		left_right_strings = np.array(['right', 'left'])
 
 		# load pupil position in xml file
 		for ix, obj in enumerate(objs):
@@ -140,7 +140,7 @@ def main():
 			pupil_boxes[ix][2] = int(get_data_from_tag(obj, 'xmax'))
 			pupil_boxes[ix][3] = int(get_data_from_tag(obj, 'ymax'))
 		
-		# exchange boxes when pupil_boxes[0] is actually the right pupil
+		# exchange boxes when pupil_boxes[0] is actually the left pupil
 		if pupil_boxes[0][0] > pupil_boxes[1][0]:
 			pupil_boxes[[0, 1]] = pupil_boxes[[1, 0]]
 			left_right_strings[[0, 1]] = left_right_strings[[1, 0]]
